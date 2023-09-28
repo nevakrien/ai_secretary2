@@ -9,30 +9,19 @@ defmodule AiAssistant.Chatbot.AiService do
 	    "I dont know, its not my cup of tea" or "I have no opinion about that topic".
 	    """
 	end  
+
 	def call(prompts, opts \\ []) do
-    %{
-      "model" => "gpt-3.5-turbo",
-      "messages" => Enum.concat([
-        %{"role" => "system", "content" => default_system_prompt()},
-      ], prompts),
-      "temperature" => 0.7
-    }
-    |> Jason.encode!()
-    |> request(opts)
-    |> parse_response()
-  end
-def call(prompts, opts \\ []) do
-    %{
-      "model" => @model,
-      "messages" => Enum.concat([
-        %{"role" => "system", "content" => default_system_prompt()},
-      ], prompts),
-      "temperature" => 0.7
-    }
-    |> Jason.encode!()
-    |> request(opts)
-    |> parse_response()
-  end
+	    %{
+	      "model" => @model,
+	      "messages" => Enum.concat([
+	        %{"role" => "system", "content" => default_system_prompt()},
+	      ], prompts),
+	      "temperature" => 0.7
+	    }
+	    |> Jason.encode!()
+	    |> request(opts)
+	    |> parse_response()
+	end
 
   defp parse_response({:ok, %Finch.Response{body: body}}) do
     messages =

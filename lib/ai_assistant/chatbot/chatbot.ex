@@ -8,6 +8,18 @@ defmodule AiAssistant.Chatbot do
 
   alias AiAssistant.Chatbot.Conversation
   alias AiAssistant.Chatbot.Message 
+  alias AiAssistant.Chatbot.AiService
+
+  def generate_response(conversation, messages) do
+  last_five_messages =
+    Enum.slice(messages, 0..4)
+    |> Enum.map(fn %{role: role, content: content} ->
+      %{"role" => role, "content" => content}
+    end)
+    |> Enum.reverse()
+
+  create_message(conversation, AiService.call(last_five_messages))
+end
 
   def list_chatbot_conversations do
     Repo.all(Conversation)

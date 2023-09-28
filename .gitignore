@@ -1,3 +1,8 @@
+#MINE:
+#this is where api key goes
+/config/secrets.exs 
+
+#____autogen____:
 # The directory Mix will write compiled artifacts to.
 /_build/
 
