@@ -83,7 +83,7 @@ defmodule AiAssistantWeb.ChatbotLive do
                 </div>
                 <span class="text-xs text-gray-500 leading-none">Now</span>
               </div>
-              <img class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80" alt="">
+              <img class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuMDxyday8jmFWbCfVnAIZAMsAXNSUA_T_fEPgJuDXJg&s" alt="">
             </div>
 
             <div :if={message.role == "assistant"} class="flex w-full mt-2 space-x-3 max-w-xs">

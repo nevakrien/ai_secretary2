@@ -3,6 +3,8 @@ defmodule AiAssistant.Repo.Migrations.CreateChatbotMessages do
 
   def change do
     create table(:chatbot_messages) do
+      add :content, :string
+      add :role, :string
       add :conversation_id, references(:chatbot_conversations, on_delete: :nothing)
 
       timestamps()

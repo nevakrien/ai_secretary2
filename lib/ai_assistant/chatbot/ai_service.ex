@@ -11,6 +11,8 @@ defmodule AiAssistant.Chatbot.AiService do
 	end  
 
 	def call(prompts, opts \\ []) do
+		#IO.puts("openai call")  # Logging when the server call is made
+		#raise('we should have seen a print')
 	    %{
 	      "model" => @model,
 	      "messages" => Enum.concat([
@@ -41,7 +43,7 @@ defmodule AiAssistant.Chatbot.AiService do
 
   defp request(body, _opts) do
     Finch.build(:post, "https://api.openai.com/v1/chat/completions", headers(), body)
-    |> Finch.request(Tutorial.Finch)
+    |> Finch.request(AiAssistant.Finch)
   end
 
   defp headers do

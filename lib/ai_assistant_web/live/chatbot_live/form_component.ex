@@ -15,6 +15,7 @@ defmodule AiAssistantWeb.ChatbotLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:content]} value={@content} type="text" placeholder="Type your message" />
+        <button type="submit">Send</button>
       </.form>
     </div>
     """
