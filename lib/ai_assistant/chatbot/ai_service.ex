@@ -22,6 +22,7 @@ defmodule AiAssistant.Chatbot.AiService do
 	    }
 	    |> Jason.encode!()
 	    |> request(opts)
+	    |> IO.inspect(label: "OpenAi Text")
 	    |> parse_response()
 	end
 
@@ -30,6 +31,8 @@ defmodule AiAssistant.Chatbot.AiService do
       Jason.decode!(body)
       |> Map.get("choices", [])
       |> Enum.reverse()
+
+      |> IO.inspect(label: "OpenAi Messages")
 
     case messages do
       [%{"message" => message}|_] -> message
