@@ -1,5 +1,5 @@
 defmodule AiAssistantWeb.ChatbotLive do
-  use Phoenix.LiveView, container: {:div, [class: "fixed right-0 bottom-0 mr-4"]}
+  use Phoenix.LiveView, container: {:div, [class: "fixed left-0 bottom-0 mr-4"]}
 
   alias Phoenix.LiveView.JS
 

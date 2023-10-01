@@ -11,7 +11,7 @@ defmodule AiAssistant.Chatbot.Conversation do
   end
 
   @doc false
-  def changeset(conversation, attrs) do
+  def changeset(conversation, _attrs) do
     conversation
     #|> cast(attrs, [:resolved_at])
   end

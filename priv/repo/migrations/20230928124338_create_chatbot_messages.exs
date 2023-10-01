@@ -10,6 +10,6 @@ defmodule AiAssistant.Repo.Migrations.CreateChatbotMessages do
       timestamps()
     end
 
-    create index(:chatbot_messages, [:conversation_id,:inserted_at])
+    create unique_index(:chatbot_messages, [:conversation_id, :inserted_at])
   end
 end
