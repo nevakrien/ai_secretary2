@@ -10,6 +10,6 @@ defmodule AiAssistant.Repo.Migrations.CreateChatbotMessages do
       timestamps()
     end
 
-    create index(:chatbot_messages, [:conversation_id])
+    create index(:chatbot_messages, [:conversation_id,:inserted_at])
   end
 end

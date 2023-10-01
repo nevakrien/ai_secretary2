@@ -4,7 +4,7 @@ defmodule AiAssistant.Chatbot.Conversation do
 
   schema "chatbot_conversations" do
 
-    field :resolved_at, :naive_datetime
+    #field :resolved_at, :naive_datetime
 
     has_many :messages, AiAssistant.Chatbot.Message, preload_order: [desc: :inserted_at]
     timestamps()
@@ -13,6 +13,6 @@ defmodule AiAssistant.Chatbot.Conversation do
   @doc false
   def changeset(conversation, attrs) do
     conversation
-    |> cast(attrs, [:resolved_at])
+    #|> cast(attrs, [:resolved_at])
   end
 end
