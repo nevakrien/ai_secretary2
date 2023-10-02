@@ -7,15 +7,15 @@ defmodule AiAssistantWeb.ChatbotLive do
   alias AiAssistant.Chatbot.Message
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
 
-    # For this AiAssistant, we are only working with a single conversation
+    user_id = session["current_user_id"]
+
     conversation =
-      case Chatbot.list_chatbot_conversations() do
-        [conversation|_] ->
-          conversation
+      case Chatbot.list_chatbot_conversations_for_user(user_id) do
+        [conversation|_] -> conversation
         _ ->
-          {:ok, conversation} = Chatbot.create_conversation()
+          {:ok, conversation} = Chatbot.create_conversation(%{user_id: user_id})
           conversation
       end
 

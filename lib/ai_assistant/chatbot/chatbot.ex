@@ -21,9 +21,15 @@ defmodule AiAssistant.Chatbot do
   create_message(conversation, AiService.call(last_five_messages))
 end
 
-  def list_chatbot_conversations do
-    Repo.all(Conversation)
-  end 
+  def list_chatbot_conversations_for_user(user_id) do
+    from(c in Conversation,
+      where: c.user_id == ^user_id,
+      order_by: [desc: c.inserted_at],
+      limit: 1
+    )
+    |> Repo.all()
+  end
+
 
   def create_conversation(attrs \\ %{}) do
     %Conversation{}

@@ -50,7 +50,7 @@
 
      <!-- Chat window liveview -->
      
-        <%= live_render @conn, AiAssistantWeb.ChatbotLive, session: %{} %>
+        <%= live_render @conn, AiAssistantWeb.ChatbotLive, session: %{"current_user_id" => @current_user.id} %>
       
 
   </body>

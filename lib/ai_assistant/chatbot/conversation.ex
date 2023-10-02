@@ -11,9 +11,10 @@ defmodule AiAssistant.Chatbot.Conversation do
   end
 
   @doc false
-  def changeset(conversation, _attrs) do
+  def changeset(conversation, attrs) do
     conversation
-    #|> cast(attrs, [:resolved_at])
+    |> cast(attrs, [:user_id])
+    |> validate_required([:user_id])
   end
 end
   
