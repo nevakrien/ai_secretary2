@@ -18,13 +18,13 @@ defmodule AiAssistantWeb.ChatbotLive do
           {:ok, conversation} = Chatbot.create_conversation(%{user_id: user_id})
           conversation
       end
-
+    previous_messages = Chatbot.list_messages_for_conversations(conversation.id)
     {
       :ok,
       socket
       |> assign(:conversation, conversation)
       |> assign(:message, %Message{})
-      |> assign(:messages, [])
+      |> assign(:messages, previous_messages)
     }
   end
 
