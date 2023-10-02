@@ -34,7 +34,7 @@ end
     from(m in Message,
       where: m.conversation_id == ^conversation_id,
       order_by: [desc: m.inserted_at],
-      #limit: 5
+      limit: 5
     )
     |> Repo.all()
   end

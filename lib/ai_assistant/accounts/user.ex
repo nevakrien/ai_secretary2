@@ -9,6 +9,8 @@ defmodule AiAssistant.Accounts.User do
     field :confirmed_at, :naive_datetime
 
     has_many :messages, AiAssistant.Chatbot.Conversation
+    has_many :tasks, AiAssistant.NoteSpace.Task
+
     timestamps()
   end
 
