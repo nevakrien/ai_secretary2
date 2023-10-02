@@ -11,5 +11,6 @@ defmodule AiAssistant.Repo.Migrations.CreateChatbotMessages do
     end
 
     create unique_index(:chatbot_messages, [:conversation_id, :inserted_at])
+    create unique_index(:chatbot_messages, [:conversation_id, :updated_at])
   end
 end

@@ -8,6 +8,7 @@ defmodule AiAssistant.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    has_many :messages, AiAssistant.Chatbot.Conversation
     timestamps()
   end
 
