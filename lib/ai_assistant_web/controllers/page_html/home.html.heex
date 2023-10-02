@@ -29,6 +29,7 @@
       /* Minimum height for the logo section */
       .logo-section {
         min-height: 150px;
+        display: flex;
       }
 
       .editable-input {
@@ -41,6 +42,39 @@
       .editable-input:focus {
         background: #f0f0f0;
       }
+
+      .task-board {
+          /*min-length: 30%;*/
+
+          min-width: 30%;
+          box-sizing: border-box; /* Ensure padding and border are included in the width calculation */
+          padding: 10px;
+      }
+      .chat_box {
+          position: fixed;
+          left: 0;
+          bottom: 0;
+          overflow: auto;
+          max-height: var(--chat-max-height, 70vh); /* Default to 50vh if not specified */
+      }
+
+      /* For smaller screens where 30% might still be too large or overlap the chat */
+      @media screen and (max-height: 1000px) and (max-width: 768px) {
+          .chat_box {
+              --chat-max-height: 40vh;
+          }
+          .task-board {
+            max-length: 30%;
+          }
+
+          .logo-section {
+            display: none;
+          }
+      }
+
+
+
+
     </style>
   </head>
   <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
@@ -49,7 +83,7 @@
     <div class="content-container" style="max-width: 800px; margin: 50px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
 
       <!-- AI Assistant title and logos -->
-      <div class="logo-section" style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+      <div class="logo-section" style=" align-items: center; justify-content: center; gap: 20px;">
           <!-- Elixir logo -->
           <img class="logo" src="https://external-preview.redd.it/elixir-v1-14-3-released-elixir-news-elixir-programming-v0-QflgKdyzqr5IljI5lTqvxpa2gzjBrMXeRQjgHO1iJDI.jpg?auto=webp&s=469ca27530e0a12e17a227b22a65efdbcbfa64d7" alt="Elixir logo">
 
@@ -61,14 +95,16 @@
       </div>
 
       <!-- Task Board LiveView -->
-      <%= live_render @conn, AiAssistantWeb.TaskBoardLive, session: %{"current_user_id" => @current_user.id} %>
-
-    </div>
-
-     <!-- Chat window liveview -->
-     <div class="fixed left-0 bottom-0 mr-4">
+      <div class="task-board">
+          <%= live_render @conn, AiAssistantWeb.TaskBoardLive, session: %{"current_user_id" => @current_user.id} %>
+      </div>
+      <!-- Chat window liveview -->
+     <div class="chat_box">
         <%= live_render @conn, AiAssistantWeb.ChatbotLive, session: %{"current_user_id" => @current_user.id} %>
     </div>
+    </div>
+
+     
 
   </body>
 </html>

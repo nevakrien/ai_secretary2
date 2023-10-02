@@ -14,7 +14,7 @@ defmodule AiAssistantWeb.TaskBoardLive do
       <button type="submit">Add</button>
     </form>
 
-    <ul style="overflow-y: auto; max-height: 400px;">
+    <ul style="overflow-y: auto; max-height: 30vh;">
       <%= for task <- @tasks do %>
         <li phx-value-task_id={task.id}>
           <!-- Toggle button with icon based on completion status -->

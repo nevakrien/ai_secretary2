@@ -64,7 +64,7 @@ defmodule AiAssistantWeb.ChatbotLive do
   def render(assigns) do
     ~H"""
     <div class="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-t-lg overflow-hidden">
-      <div class="flex flex-col flex-grow p-4 overflow-auto max-h-[50vh]">
+      <div class="flex flex-col flex-grow p-4 overflow-auto max-h-[--chat-max-height]">
         <div class="flex w-full mt-2 space-x-3 max-w-xs">
           <img class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300" src="https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80" alt="">
           <div>
