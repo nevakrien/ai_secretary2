@@ -8,13 +8,15 @@
     <style>
       /* Default logo size for smaller screens */
       .logo {
-        width: 40px;
+        width: auto;
+        height: 40px;
       }
 
       /* Increase logo size for screens wider than 800px */
       @media screen and (min-width: 800px) {
         .logo {
-          width: 100px;
+          width: auto;
+          height: 100px;
         }
       }
 
@@ -37,15 +39,16 @@
 
       <!-- AI Assistant title and logos -->
       <div class="logo-section" style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-        <!-- Elixir logo -->
-        <img class="logo" src="https://external-preview.redd.it/elixir-v1-14-3-released-elixir-news-elixir-programming-v0-QflgKdyzqr5IljI5lTqvxpa2gzjBrMXeRQjgHO1iJDI.jpg?auto=webp&s=469ca27530e0a12e17a227b22a65efdbcbfa64d7" alt="Elixir logo">
+          <!-- Elixir logo -->
+          <img class="logo" src="https://external-preview.redd.it/elixir-v1-14-3-released-elixir-news-elixir-programming-v0-QflgKdyzqr5IljI5lTqvxpa2gzjBrMXeRQjgHO1iJDI.jpg?auto=webp&s=469ca27530e0a12e17a227b22a65efdbcbfa64d7" alt="Elixir logo">
 
-        <!-- Main Title -->
-        <h1 style="text-align: center; color: #4e2a8e; margin-bottom: 20px; font-size: 2.5em;">AI Assistant</h1>
+          <!-- Main Title -->
+          <h1 style="text-align: center; color: #4e2a8e; margin-bottom: 20px; font-size: 2.5em;">AI Assistant</h1>
 
-        <!-- Phoenix logo -->
-        <img class="logo" src="https://images.prismic.io/cryptrfront/1fd9365c-99cc-49bc-86e0-0a3d18bf095b_liveview_phoenix.jpg?auto=compress,format" alt="Phoenix logo">
+          <!-- Phoenix logo -->
+          <img class="logo" src={static_path(@conn, "/images/logo.svg")} alt="Phoenix Logo">
       </div>
+
     </div>
 
      <!-- Chat window liveview -->
