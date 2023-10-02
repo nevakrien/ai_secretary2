@@ -17,9 +17,11 @@ defmodule AiAssistantWeb.TaskBoardLive do
     <ul style="overflow-y: auto; max-height: 400px;">
       <%= for task <- @tasks do %>
         <li phx-value-task_id={task.id}>
-          <input type="checkbox" phx-change="toggle_task_completion" 
-            checked={task.completed and "checked"}
-            phx-value-task_id={task.id} />
+          <!-- Toggle button with icon based on completion status -->
+          <button phx-click="toggle_task_completion" phx-value-task_id={task.id}>
+            <%= if task.completed, do: "✔️", else: "□" %>
+          </button>
+
           <input type="text" value={task.text} class="editable-input" phx-blur="update_task_text"
             phx-value-task_id={task.id} style={task.completed and "text-decoration: line-through;"} />
           <button phx-click="delete_task" phx-value-task_id={task.id}>🗑️</button>
@@ -57,7 +59,7 @@ defmodule AiAssistantWeb.TaskBoardLive do
 
     case AiAssistant.Repo.insert(changeset) do
       {:ok, task} ->
-        {:noreply, assign(socket, tasks: [task | socket.assigns.tasks])}
+        {:noreply, assign(socket, tasks: fetch_tasks_for_user(socket.assigns.current_user_id))}
       {:error, _changeset} ->
         {:noreply, socket}
     end
@@ -77,13 +79,13 @@ defmodule AiAssistantWeb.TaskBoardLive do
     changeset = Task.changeset(task, attrs)
 
     case AiAssistant.Repo.update(changeset) do
-      {:ok, updated_task} ->
-        tasks = Enum.map(socket.assigns.tasks, fn t -> if t.id == id, do: updated_task, else: t end)
-        {:noreply, assign(socket, tasks: tasks)}
+      {:ok, _updated_task} ->
+       {:noreply, assign(socket, tasks: fetch_tasks_for_user(socket.assigns.current_user_id))}
       {:error, _changeset} ->
         {:noreply, socket}
     end
   end
+
 
   # Deleting a task
   @impl true
