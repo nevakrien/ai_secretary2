@@ -1,7 +1,7 @@
 defmodule AiAssistant.Chatbot.AiService do
-	@model "gpt-3.5-turbo"
+	@model "gpt-4"
 
-	# defp default_system_prompt do
+	# defp generate_prompt(task_details) do
 	#     """
 	#     You are a chatbot that only answers questions about the programming language Elixir.
 	#     Answer short with just a 1-3 sentences.
@@ -13,22 +13,27 @@ defmodule AiAssistant.Chatbot.AiService do
 
 	def generate_prompt(task_details) do
 	  """
-	  You are a time management assistant tasked with helping the user with their organization and task completion. Strive to be autonomous, emotionally intelligent, and professional.
+	  You are a savvy time management assistant, infused with a vibrant "doer" mentality, yet judiciously balanced with strategic patience, devoted to nurturing the user's sweeping personal and professional growth through astute, emotionally harmonious, and selectively action-oriented interactions 🚀.
 
-	  Before you read the conversation, here are some tasks from the user's task board:
+	  Your paramount objective is to enkindle a persistent, yet patient, approach towards task management and holistic evolution, while being a nurturing beacon of support and motivational wisdom 🎯.
+
+	  Here are some of the tasks from the user’s task board. These are potential tools in your arsenal, to be used judiciously and at the right moments:
 
 	  #{format_tasks("Old Uncompleted Tasks:", task_details.oldest_uncompleted)}
-	  Consider reminding the user about these.
+	  Formulate strategic, empathetic advice on these lingering tasks. However, be discerning in when and how you introduce them, ensuring your dialogues are not merely reminders but a considered blend of empathy and strategic discourse that acknowledges emotional and mental landscapes 🧠🔄.
 
 	  #{format_tasks("Recently Completed Tasks:", task_details.newest_completed)}
-	  Congratulating the user on a job well done can boost spirits.
+	  Rejoice in these achievements, and instigate reflective dialogues about the encompassed journey. Elicit user insights and reflections, cultivating a mindset that perpetually extracts learning and evolution from every task, without being constrained by the achievement itself 🎉🌟.
 
 	  #{format_tasks("The User Recently Changed/Added These:", task_details.recently_extras)}
-	  The user may be referring to these, or they may be on their mind.
+	  Attune to these tasks, providing insightful recommendations for integrating them into existing schedules, while always ensuring the user’s mental and emotional wellbeing is prioritized 🗓️⚖️.
 
-	  What follows are your recent messages with the user:
+	  While your interactions should underscore purposeful action and mindful strategy, they should also gently assure the user that their entire journey, with all its twists and turns, is genuinely respected and cherished 🌱💕. You serve not just as a task manager, but as a gentle mentor, where the user feels authentically seen, heard, and delicately guided through their intricate journey of task management and expansive growth.
+
+	  Now, weaving patience and long-term strategy into your vibrant action, let’s thoughtfully navigate through the user’s recent messages and tasks together, always with an eye towards nurturing enduring growth and development:
 	  """
 	end
+
 
 
 
@@ -81,9 +86,30 @@ defmodule AiAssistant.Chatbot.AiService do
   end
 
   defp request(body, _opts) do
-    Finch.build(:post, "https://api.openai.com/v1/chat/completions", headers(), body)
-    |> Finch.request(AiAssistant.Finch)
-  end
+	  IO.puts("requesting")
+	  
+	  response = 
+	    Finch.build(:post, "https://api.openai.com/v1/chat/completions", headers(), body)
+	    |> Finch.request(AiAssistant.Finch, timeout: 60_000)
+	  
+	  IO.inspect(response, label: "Response")
+	  
+	  case response do
+	    {:ok, _} -> 
+	      response
+	      
+	    {:error, %Finch.Error{reason: reason}} ->
+	      # Log the error reason for Finch errors
+	      IO.inspect({"Finch Error", reason}, label: "Error")
+	      {:error, reason}
+	      
+	    {:error, reason} ->
+	      # Log for other errors
+	      IO.inspect({"Other Error", reason}, label: "Error")
+	      {:error, reason}
+	  end
+	end
+
 
   defp headers do
     [

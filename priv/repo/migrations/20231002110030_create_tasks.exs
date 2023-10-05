@@ -11,5 +11,6 @@ defmodule AiAssistant.Repo.Migrations.CreateTasks do
     end
 
     create index(:tasks, [:user_id])
+    create index(:tasks, [:user_id, :inserted_at,:updated_at,:completed])
   end
 end
