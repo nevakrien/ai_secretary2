@@ -5,7 +5,8 @@ defmodule AiAssistant.NoteSpace.Task do
   schema "tasks" do
     field :text, :string
     field :completed, :boolean, default: false
-    field :user_id, :id
+    #field :user_id, :id
+    belongs_to :user, AiAssistant.Accounts.User
 
     timestamps()
   end

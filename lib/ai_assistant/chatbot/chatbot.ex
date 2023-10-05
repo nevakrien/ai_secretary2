@@ -7,27 +7,44 @@ defmodule AiAssistant.Chatbot do
   alias AiAssistant.Repo
 
   alias AiAssistant.Chatbot.Conversation
+  alias AiAssistant.Chatbot.DataHandling
   alias AiAssistant.Chatbot.Message 
   alias AiAssistant.Chatbot.AiService
 
   def generate_response(conversation, messages) do
-  last_five_messages =
-    Enum.slice(messages, 0..4)
-    |> Enum.map(fn %{role: role, content: content} ->
-      %{"role" => role, "content" => content}
-    end)
-    |> Enum.reverse()
+    last_five_messages =
+      Enum.slice(messages, 0..4)
+      |> Enum.map(fn %{role: role, content: content} ->
+        %{"role" => role, "content" => content}
+      end)
+      |> Enum.reverse()
 
-  create_message(conversation, AiService.call(last_five_messages))
-end
+    # need to integrate
+    task_details = DataHandling.fetch_task_details(conversation.user_id) 
+    IO.inspect(task_details, label: "Fetched task details")
 
-  def list_chatbot_conversations_for_user(user_id) do
-    from(c in Conversation,
-      where: c.user_id == ^user_id,
-      order_by: [desc: c.inserted_at],
-      limit: 1
-    )
-    |> Repo.all()
+    create_message(conversation, AiService.call(last_five_messages,task_details))
+  end
+
+  def get_conversation(user_id) do
+    # Trying to get the most recent conversation
+    conversation = 
+      Repo.one(
+        from(c in Conversation,
+          where: c.user_id == ^user_id,
+          order_by: [desc: c.inserted_at],
+          limit: 1
+        )
+      )
+
+    # If there's no existing conversation, create a new one
+    case conversation do
+      nil ->
+        {:ok, new_conversation} = create_conversation(%{user_id: user_id})
+        new_conversation
+      _ ->
+        conversation
+    end
   end
 
   def list_messages_for_conversations(conversation_id) do

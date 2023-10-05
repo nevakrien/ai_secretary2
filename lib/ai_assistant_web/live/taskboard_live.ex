@@ -2,6 +2,7 @@ defmodule AiAssistantWeb.TaskBoardLive do
   use Phoenix.LiveView
 
   alias AiAssistant.NoteSpace.Task
+  alias Phoenix.PubSub
 
   # Add this import if it's not already in your module
   import Ecto.Query, only: [from: 2]
@@ -32,15 +33,31 @@ defmodule AiAssistantWeb.TaskBoardLive do
   end
 
 
+  defp refresh_tasks(socket) do
+    assign(socket, tasks: fetch_tasks_for_user(socket.assigns.current_user_id))
+  end 
 
   defp fetch_tasks_for_user(user_id) do
     AiAssistant.Repo.all(from t in Task, where: t.user_id == ^user_id, order_by: [desc: t.inserted_at])
+  end 
+
+  @impl true
+  def handle_info({:refresh, tasks}, socket) do
+    assign(socket, tasks: tasks)
+  end
+
+  def handle_info({:refresh}, socket) do
+    refresh_tasks(socket)
   end
 
   @impl true
   def mount(_params, session, socket) do
     user_id = session["current_user_id"]
     tasks = fetch_tasks_for_user(user_id)
+
+    # Broadcast a message to refresh tasks in other LiveViews listening on the user-specific topic
+    topic = "task_updates:#{user_id}"
+    PubSub.broadcast(AiAssistant.PubSub, topic, {:refresh_tasks})
 
     {:ok, assign(socket, tasks: tasks, new_task_text: "", current_user_id: user_id)}
   end
@@ -58,8 +75,8 @@ defmodule AiAssistantWeb.TaskBoardLive do
     changeset = Task.changeset(%Task{}, attrs)
 
     case AiAssistant.Repo.insert(changeset) do
-      {:ok, task} ->
-        {:noreply, assign(socket, tasks: fetch_tasks_for_user(socket.assigns.current_user_id))}
+      {:ok, _task} ->
+        {:noreply, refresh_tasks(socket)}
       {:error, _changeset} ->
         {:noreply, socket}
     end
@@ -80,7 +97,7 @@ defmodule AiAssistantWeb.TaskBoardLive do
 
     case AiAssistant.Repo.update(changeset) do
       {:ok, _updated_task} ->
-       {:noreply, assign(socket, tasks: fetch_tasks_for_user(socket.assigns.current_user_id))}
+       {:noreply, refresh_tasks(socket)}
       {:error, _changeset} ->
         {:noreply, socket}
     end
@@ -93,7 +110,7 @@ defmodule AiAssistantWeb.TaskBoardLive do
     task = AiAssistant.Repo.get!(Task, id)
     AiAssistant.Repo.delete(task)
 
-    {:noreply, assign(socket, tasks: fetch_tasks_for_user(socket.assigns.current_user_id))}
+    {:noreply, refresh_tasks(socket)}
   end
 
   # Updating a task's text
@@ -111,7 +128,7 @@ defmodule AiAssistantWeb.TaskBoardLive do
 
     case AiAssistant.Repo.update(changeset) do
       {:ok, _updated_task} ->
-        {:noreply, assign(socket, tasks: fetch_tasks_for_user(socket.assigns.current_user_id))}
+        {:noreply, refresh_tasks(socket)}
       {:error, _changeset} ->
         {:noreply, socket}
     end
