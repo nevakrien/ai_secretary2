@@ -18,3 +18,4 @@ config :logger, level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+config :ai_assistant, :open_ai_api_key, System.get_env("OPEN_AI_API_KEY") || raise "API Key must be set"
