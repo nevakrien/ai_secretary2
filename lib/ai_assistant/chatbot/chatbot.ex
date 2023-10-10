@@ -12,8 +12,8 @@ defmodule AiAssistant.Chatbot do
   alias AiAssistant.Chatbot.AiService
 
   def generate_response(conversation, messages) do
-    last_five_messages =
-      Enum.slice(messages, 0..4)
+    last_messages =
+      Enum.slice(messages, 0..3)
       |> Enum.map(fn %{role: role, content: content} ->
         %{"role" => role, "content" => content}
       end)
@@ -23,7 +23,7 @@ defmodule AiAssistant.Chatbot do
     task_details = DataHandling.fetch_task_details(conversation.user_id) 
     IO.inspect(task_details, label: "Fetched task details")
 
-    create_message(conversation, AiService.call(last_five_messages,task_details))
+    create_message(conversation, AiService.call(last_messages,task_details))
   end
 
   def get_conversation(user_id) do
