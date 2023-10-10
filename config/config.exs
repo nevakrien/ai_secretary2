@@ -12,13 +12,12 @@ config :ai_assistant,
 
 # Configures the endpoint
 config :ai_assistant, AiAssistantWeb.Endpoint,
-  url: [host: "localhost"],
   render_errors: [
     formats: [html: AiAssistantWeb.ErrorHTML, json: AiAssistantWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: AiAssistant.PubSub,
-  live_view: [signing_salt: "L5+vUvrn"]
+  pubsub_server: AiAssistant.PubSub
+
 
 # Configures the mailer
 #

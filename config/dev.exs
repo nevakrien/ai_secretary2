@@ -1,5 +1,15 @@
 import Config
 
+config :ai_assistant, AiAssistantWeb.Endpoint,
+  url: [host: "localhost"],
+  http: [port: 4000], # or any other port you prefer for development
+  debug_errors: true,
+  code_reloader: true,
+  check_origin: false,
+  watchers: [],
+  live_view: [signing_salt: "L5+vUvrn"] # Keep your dev-specific signing salt here
+
+
 # Configure your database
 config :ai_assistant, AiAssistant.Repo,
   username: "postgres",

@@ -19,3 +19,17 @@ config :logger, level: :info
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
 config :ai_assistant, :open_ai_api_key, System.get_env("OPEN_AI_API_KEY") || raise "API Key must be set"
+
+config :ai_assistant, AiAssistantWeb.Endpoint,
+  url: [scheme: "https", host: "ai-secretary-alpha.gigalixirapp.com", port: 443],
+  http: [
+    :inet6,
+    port: System.get_env("PORT") || 4000,
+    transport_options: [socket_opts: [:inet6]]
+  ],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  server: true,
+  root: ".",
+  version: Application.spec(:ai_assistant, :vsn),
+  live_view: [signing_salt: System.get_env("LIVE_VIEW_SIGNING_SALT")] # Use environment variable for sensitive data
