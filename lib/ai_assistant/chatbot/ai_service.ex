@@ -90,7 +90,7 @@ end
 	  
 	  response = 
 	    Finch.build(:post, "https://api.openai.com/v1/chat/completions", headers(), body)
-	    |> Finch.request(AiAssistant.Finch, timeout: 120_000) #long wait time are expected source https://community.openai.com/t/slow-response-time-with-gpt-4/107104
+	    |> Finch.request(AiAssistant.Finch, receive_timeout: 120_000) #long wait time are expected source https://community.openai.com/t/slow-response-time-with-gpt-4/107104
 	  
 	  IO.inspect(response, label: "Response")
 	  
