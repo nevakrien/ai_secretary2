@@ -19,6 +19,9 @@ defmodule AiAssistantWeb.ChatbotLive do
       |> assign(:conversation, conversation)
       |> assign(:message, %Message{})
       |> assign(:messages, previous_messages)
+
+      |> assign(:loading, false)
+      |> assign(:call_ref, nil) 
     }
   end
 
@@ -26,7 +29,7 @@ defmodule AiAssistantWeb.ChatbotLive do
   def handle_info({AiAssistantWeb.ChatbotLive.FormComponent, {:saved, message}}, socket) do
     messages = [message|socket.assigns.messages]
 
-    Task.async(fn ->
+    task=Task.async(fn ->
       Chatbot.generate_response(socket.assigns.conversation, messages)
     end)
 
@@ -35,10 +38,12 @@ defmodule AiAssistantWeb.ChatbotLive do
       socket
       |> assign(:message, %Message{})
       |> assign(:messages, messages)
+      |> assign(:loading, true)
+      |> assign(:call_ref, task.ref) 
     }
   end
 
-  def handle_info({ref, result}, socket) do
+  def handle_info({ref, result}, socket) when is_reference(ref) and ref == socket.assigns.call_ref do
     Process.demonitor(ref, [:flush])
 
     messages =
@@ -51,6 +56,18 @@ defmodule AiAssistantWeb.ChatbotLive do
       :noreply,
       socket
       |> assign(:messages, messages)
+      |> assign(:loading, false)
+      |> assign(:call_ref, nil) 
+    }
+  end
+
+  # If the task fails...
+  def handle_info({:DOWN, ref, _, _, _}, socket) when is_reference(ref) and ref == socket.assigns.call_ref do
+    {
+      :noreply,
+      socket
+      |> assign(:loading, false)
+      |> assign(:call_ref, nil) 
     }
   end
 
@@ -91,6 +108,7 @@ defmodule AiAssistantWeb.ChatbotLive do
           id="new-message"
           conversation={@conversation}
           message={@message}
+          loading={@loading}
         />
       </div>
     </div>
