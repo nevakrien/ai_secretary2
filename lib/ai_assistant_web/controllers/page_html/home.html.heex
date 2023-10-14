@@ -1,110 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <title><%= assigns[:page_title] || "AiAssistant" %> · Phoenix Framework</title>
+    
+    <!--boilerplate for delete-->
+    <!--link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
+    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
+    <script type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}></script>
+    <script type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}></script-->
     <style>
-      /* Default logo size for smaller screens */
-      .logo {
-        width: auto;
-        height: 40px;
-      }
-
-      /* Increase logo size for screens wider than 800px */
-      @media screen and (min-width: 800px) {
         .logo {
-          width: auto;
-          height: 100px;
-        }
-      }
-
-      /* Flexbox Layout for content */
-      .content-container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Minimum height for the logo section */
-      .logo-section {
-        min-height: 150px;
-        display: flex;
-      }
-
-      .editable-input {
-        border: none;
-        background: none;
-        width: 100%;
-        outline: none;
-      }
-
-      .editable-input:focus {
-        background: #f0f0f0;
-      }
-
-      .task-board {
-          /*min-length: 30%;*/
-
-          min-width: 30%;
-          box-sizing: border-box; /* Ensure padding and border are included in the width calculation */
-          padding: 10px;
-      }
-      .chat_box {
-          position: fixed;
-          left: 0;
-          bottom: 0;
-          overflow: auto;
-          max-height: var(--chat-max-height, 70vh); /* Default to 50vh if not specified */
-      }
-
-      /* For smaller screens where 30% might still be too large or overlap the chat */
-      @media screen and (max-height: 1000px) and (max-width: 768px) {
-          .chat_box {
-              --chat-max-height: 40vh;
-          }
-          .task-board {
-            max-length: 30%;
+            width: auto;
+            height: 40px;
           }
 
-          .logo-section {
-            display: none;
+          /* Increase logo size for screens wider than 800px */
+          @media screen and (min-width: 800px) {
+            .logo {
+              width: auto;
+              height: 100px;
+            }
           }
-      }
-
-
-
 
     </style>
-  </head>
-  <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
-
-    <!-- Content container -->
-    <div class="content-container" style="max-width: 800px; margin: 50px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-
-      <!-- AI Assistant title and logos -->
-      <div class="logo-section" style=" align-items: center; justify-content: center; gap: 20px;">
-          <!-- Elixir logo -->
-          <img class="logo" src="https://external-preview.redd.it/elixir-v1-14-3-released-elixir-news-elixir-programming-v0-QflgKdyzqr5IljI5lTqvxpa2gzjBrMXeRQjgHO1iJDI.jpg?auto=webp&s=469ca27530e0a12e17a227b22a65efdbcbfa64d7" alt="Elixir logo">
-
-          <!-- Main Title -->
-          <h1 style="text-align: center; color: #4e2a8e; margin-bottom: 20px; font-size: 2.5em;">AI Assistant</h1>
-
-          <!-- Phoenix logo -->
-          <img class="logo" src={static_path(@conn, "/images/logo.svg")} alt="Phoenix Logo">
-      </div>
-
-      <!-- Task Board LiveView -->
-      <div class="task-board">
-          <%= live_render @conn, AiAssistantWeb.TaskBoardLive, session: %{"current_user_id" => @current_user.id} %>
-      </div>
-      <!-- Chat window liveview -->
-     <div class="chat_box">
-        <%= live_render @conn, AiAssistantWeb.ChatbotLive, session: %{"current_user_id" => @current_user.id} %>
-    </div>
-    </div>
-
-     
-
-  </body>
+</head>
+<body>
+    <header>
+        <div id="logo">
+            <img class="logo" src={static_path(@conn, "/images/logo.svg")} alt="Phoenix Logo">
+        </div>
+        <nav id="user-menu">
+            <ul>
+                <li><a href="/users/settings">Settings</a></li>
+                <li><a href="/users/log_out" data-csrf={Plug.CSRFProtection.get_csrf_token()} data-method="delete"  data-to="/users/log_out">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="core-features">
+            <!-- Core site features should be listed here in a clickable menu format -->
+            <ul>
+                <li><a href="/taskboard">Taskboard</a></li>
+                <!-- Add more core features as per your app -->
+            </ul>
+        </section>
+    </main>
+</body>
 </html>

@@ -11,19 +11,27 @@ defmodule AiAssistantWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
+    plug Plug.CSRFProtection
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  #main handcoded functionality
   scope "/", AiAssistantWeb do
-    #pipe_through :browser 
-    pipe_through [:browser, :require_authenticated_user]
-    #live "/chatbot", ChatbotLive, :index #added
+    pipe_through :browser 
+
     get "/", PageController, :home
   end
 
+  scope "/", AiAssistantWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    get "/taskboard", PageController, :taskboard
+  end
+
+  #autogen
   # Other scopes may use custom stacks.
   # scope "/api", AiAssistantWeb do
   #   pipe_through :api
@@ -63,6 +71,8 @@ defmodule AiAssistantWeb.Router do
 
   scope "/", AiAssistantWeb do
     pipe_through [:browser, :require_authenticated_user]
+
+    #delete "/users/log_out", UserSessionController, :delete #added
 
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update

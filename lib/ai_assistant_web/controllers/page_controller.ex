@@ -1,9 +1,12 @@
 defmodule AiAssistantWeb.PageController do
   use AiAssistantWeb, :controller
+  #alias AiAssistantWeb.Router.Helpers, as: Routes
 
   def home(conn, _params) do
-    # The home page is often custom made,
-    # so skip the default app layout.
-    render(conn, :home, layout: false)
+    render(conn, :home)#, layout: false
+  end
+
+  def taskboard(conn, _params) do
+    render(conn, :taskboard)#, layout: false
   end
 end
