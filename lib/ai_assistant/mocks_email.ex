@@ -1,4 +1,3 @@
-#mock email behivior
 defmodule AiAssistant.Mailer.MockAdapter do
   @behaviour Swoosh.Adapter
   
@@ -6,5 +5,10 @@ defmodule AiAssistant.Mailer.MockAdapter do
   def deliver(%Swoosh.Email{} = email, _config) do
     IO.inspect(email, label: "Email sent")
     {:ok, %{id: "console_log"}}
+  end
+
+  @impl Swoosh.Adapter
+  def validate_config(_config) do
+    :ok
   end
 end
