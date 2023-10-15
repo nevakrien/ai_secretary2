@@ -11,7 +11,11 @@ defmodule AiAssistantWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_user
-    plug Plug.CSRFProtection
+    #plug Plug.CSRFProtection
+  end
+
+  pipeline :no_store do
+  plug :put_secure_browser_headers, %{ "cache-control" => "no-store" }
   end
 
   pipeline :api do
@@ -20,7 +24,7 @@ defmodule AiAssistantWeb.Router do
 
   #main handcoded functionality
   scope "/", AiAssistantWeb do
-    pipe_through :browser 
+    pipe_through [:browser,:no_store] 
 
     get "/", PageController, :home
   end
