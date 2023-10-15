@@ -112,4 +112,20 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  #my code:
+  config :ai_assistant, :open_ai_api_key, System.get_env("OPEN_AI_API_KEY") || raise "API Key must be set"
+  
+  config :ai_assistant, AiAssistant.Mailer.MockAdapter
+end
+
+#mock email behivior
+defmodule AiAssistant.Mailer.MockAdapter do
+  @behaviour Swoosh.Adapter
+  
+  @impl Swoosh.Adapter
+  def deliver(%Swoosh.Email{} = email, _config) do
+    IO.inspect(email, label: "Email sent")
+    {:ok, %{id: "console_log"}}
+  end
 end
