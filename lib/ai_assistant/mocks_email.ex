@@ -1,4 +1,4 @@
-defmodule AiAssistant.Mailer.MockAdapter do
+defmodule AiAssistant.MockAdapter do
   @behaviour Swoosh.Adapter
   
   @impl Swoosh.Adapter

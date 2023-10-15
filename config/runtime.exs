@@ -117,6 +117,6 @@ if config_env() == :prod do
   config :ai_assistant, :open_ai_api_key, System.get_env("OPEN_AI_API_KEY") || raise "API Key must be set"
   
   config :ai_assistant, AiAssistant.Mailer,
-  adapter: AiAssistant.Mailer.MockAdapter
+  adapter: AiAssistant.MockAdapter
 
 end
