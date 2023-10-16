@@ -5,7 +5,7 @@ defmodule AiAssistant.Repo.Migrations.CreateTasks do
     create table(:tasks) do
       add :text, :string
       add :completed, :boolean, default: false, null: false
-      add :user_id, references(:users, on_delete: :nothing)
+      add :user_id, references(:users, on_delete: :delete_all)
 
       timestamps()
     end
