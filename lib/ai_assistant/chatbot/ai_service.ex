@@ -1,6 +1,6 @@
 defmodule AiAssistant.Chatbot.AiService do
 	@model "gpt-4"
-	@api_key Application.compile_env(:ai_assistant, :open_ai_api_key)
+	#@api_key Application.compile_env(:ai_assistant, :open_ai_api_key)
 
 	# defp generate_prompt(task_details) do
 	#     """
@@ -115,7 +115,7 @@ end
     [
       {"Content-Type", "application/json"},
       #{"Authorization", "Bearer #{Application.get_env(:ai_assistant, :open_ai_api_key)}"},
-      {"Authorization", "Bearer #{@api_key}"},
+      {"Authorization", "Bearer #{:open_ai_api_key}"},
     ]
   end
 end
