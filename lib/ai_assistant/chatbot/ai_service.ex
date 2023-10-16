@@ -114,8 +114,8 @@ end
   defp headers do
     [
       {"Content-Type", "application/json"},
-      #{"Authorization", "Bearer #{Application.get_env(:ai_assistant, :open_ai_api_key)}"},
-      {"Authorization", "Bearer #{:open_ai_api_key}"},
+      {"Authorization", "Bearer #{Application.get_env(:ai_assistant, :open_ai_api_key)}"},
+      #{"Authorization", "Bearer #{@api_key}"},
     ]
   end
 end
