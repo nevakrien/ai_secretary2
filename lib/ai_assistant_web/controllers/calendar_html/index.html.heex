@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Calendar</title>
+ <!--script type="text/javascript" src={AiAssistantWeb.Router.Helpers.static_path(@conn, "/js/calendar.js")}></script-->
+
+
+
+  <style></style>
+</head>
+
+<body style="">
+  <div class='headed?'>Here's the calendar:</div>
+  <!-- Here you can add other HTML for your calendar -->
+
+  <div class='dont head' style="">
+     <%= live_render @conn, AiAssistantWeb.CalendarLive, session: %{"current_user_id" => @current_user.id}, layout: false %>
+
+  </div>
+</body>
+</html>

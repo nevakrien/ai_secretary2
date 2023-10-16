@@ -33,6 +33,10 @@ defmodule AiAssistantWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     get "/taskboard", PageController, :taskboard
+
+    get "/calendar", CalendarController, :calendar_index
+    get "/calendar/:year/:month", CalendarController, :show_month
+    get "/calendar/:year/:month/:day", CalendarController, :show_day
   end
 
   #autogen

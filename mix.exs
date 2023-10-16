@@ -53,7 +53,8 @@ defmodule AiAssistant.MixProject do
       {:plug_cowboy, "~> 2.5"},
       
       #manual
-      {:ecto_enum, "~> 1.4"}
+      {:ecto_enum, "~> 1.4"},
+      {:timex, "~> 3.7"},
     ]
   end
 

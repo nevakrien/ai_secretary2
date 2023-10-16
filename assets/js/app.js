@@ -42,3 +42,17 @@ window.liveSocket = liveSocket
 window.addEventListener("scrollIntoView", event => {
   event.target.scrollIntoView({behavior: "smooth"})
 })
+
+// calendar hook
+let Hooks = {};
+
+Hooks.SendTime = {
+  mounted() {
+    // 'this' refers to the Hook's context, and 'this.el' is the DOM element the Hook is attached to.
+    // You don't need to know the specific ID of the element.
+    this.pushEvent("receive_time", { current_time: new Date().toISOString() });
+  },
+};
+
+// Assuming liveSocket is your LiveSocket instance
+liveSocket.hooks = Hooks;
