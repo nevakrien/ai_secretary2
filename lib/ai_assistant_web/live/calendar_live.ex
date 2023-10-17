@@ -9,7 +9,7 @@ defmodule AiAssistantWeb.NeedDateTime do
 
       # Common functionality for handling events
       def handle_event("receive_time", %{"current_time" => time}, socket) do
-        #IO.puts('recived')
+        IO.puts('recived')
         parsed_time = 
           case Timex.parse(time, "{ISO:Extended}") do
             {:ok, datetime} -> datetime#Timex.format!(datetime, "{RFC1123}")
@@ -20,11 +20,11 @@ defmodule AiAssistantWeb.NeedDateTime do
         
         socket=assign(socket, current_time: parsed_time)
         #IO.inspect(parsed_time, label: 'client retrieved time')#when this goes away things work fine???? data race with the mount???
-        {:noreply, handle_parsed_time(socket)}
+        {:noreply, get_events_list(socket)}
       end
 
       # deafault overwrite this
-      #def handle_parsed_time(socket), do: socket
+      #def get_events_list(socket), do: socket
     end
   end
 end
@@ -53,39 +53,66 @@ defmodule AiAssistantWeb.CalendarLive.Index do
     ~H"""
     <div id="calendar" phx-hook="SendTime">
       <div class='curent-time'>
-        Current time: <%= formatted_time(@current_time) %>
+        <strong>Current time:</strong> <%= formatted_time(@current_time) %>
       </div>
       <div class='add-form'>
-        <h2>Add New Event</h2>
-        <form phx-submit="save_event">
-          <label for="event_description">Event Description:</label>
-          <input type="text" name="event[description]" id="event_description"/>
-          
-          <label for="event_date">Event Date:</label>
-          <input type="date" name="event[date]" id="event_date"/>
-          <input type="time" name="event[time]" id="event_time" step="1">
-
-          <input type="submit" value="Add Event" />
-        </form>
+        <%= render_event_form(assigns) %>
       </div>
       <!-- Render the list of events here -->
       <div>
         <h2 class='events-headlines'>Events:</h2>
-        <ul>
-          <%= for {event, index} <- Enum.with_index(@events) do %>
-            <li class={if rem(index, 2) == 0, do: "event-item-even", else: "event-item-odd"}>
-              <strong>Date:</strong> <%= event.date |> formatted_time %><br>
-              <strong>Description:</strong> <%= event.description %>
-            </li>
-          <% end %>
-        </ul>
+        <%= render_events(assigns)%>
       </div>
     </div>
     """
   end
 
+  defp render_events(assigns) do
+    ~H"""
+      <ul>
+        <%= for {event, index} <- Enum.with_index(@events) do %>
+          <li class={if rem(index, 2) == 0, do: "event-item-even", else: "event-item-odd"}>
+            <strong>Date:</strong> <%= event.date |> formatted_time %><br>
+            <strong>Description:</strong> <%= event.description %>
+            <div>
+              <button phx-click="delete_event" phx-value-id={event.id}>🗑️</button>
+            </div>
+          </li>
 
-  def handle_parsed_time(socket) do
+        <% end %>
+      </ul>
+    """
+  end
+  defp render_event_form(assigns) do
+    ~L"""
+    <div class="centered-form">
+      <h2>Add New Event</h2>
+      <form phx-submit="save_event">
+        <div class="form-group">
+          <label for="event_description">Event Description:</label>
+          <input type="text" name="event[description]" id="event_description"/>
+        </div>
+        
+        <div class="form-group">
+          <label for="event_date">Event Date:</label>
+          <input type="date" name="event[date]" id="event_date"/>
+        </div>
+        
+        <div class="form-group">
+          <label for="event_time">Event Time:</label>
+          <input type="time" name="event[time]" id="event_time" step="60">
+        </div>
+        
+        <div class="form-group" style="text-color var(--color-phx)">
+          <input type="submit" value="Add Event" />
+        </div>
+      </form>
+    </div>
+    """
+  end
+
+
+  def get_events_list(socket) do
     socket=assign(socket,:events,Event.get_events(socket.assigns.current_user_id,10))
     IO.inspect(socket,label: "socket with events")
   end
@@ -100,7 +127,7 @@ defmodule AiAssistantWeb.CalendarLive.Index do
     time = Map.get(event_params, "time") || "00:00" # default to midnight if time is not provided
 
     # Constructing a string that represents the date and time
-    datetime_string = date <> "T" <> time #<> ":00" # appending seconds, if your time input doesn't include them
+    datetime_string = date <> "T" <> time <> ":00" # appending seconds, if your time input doesn't include them
 
     # Parsing the string into a NaiveDateTime struct.
     naive_datetime = NaiveDateTime.from_iso8601!(datetime_string)
@@ -114,9 +141,9 @@ defmodule AiAssistantWeb.CalendarLive.Index do
     IO.inspect(attrs, label: 'event')
 
     case Event.create_event(attrs) do
-      {:ok, _event} ->
+      {:ok, event} ->
         # If the event is saved successfully, you might want to clear the form or emit a success message.
-        {:noreply, socket}
+        {:noreply, assign(socket,:events,[event | socket.assigns.events] )}
       {:error, changeset} ->
         # If there's an error, you'll need to handle it here, possibly sending back validation errors to the form.
         IO.inspect(changeset)
@@ -124,7 +151,27 @@ defmodule AiAssistantWeb.CalendarLive.Index do
     end
   end
 
+  # gpt
+  def handle_event("delete_event", %{"id" => id}, socket) do
+    # Convert the id to integer if it's a string, as database IDs are typically integers.
+    id = String.to_integer(id)
 
+    # Assuming you have a delete function in your context
+    case Event.delete_event(id) do
+      {:ok, _deleted_event} ->
+        # If the event was successfully deleted, fetch the updated list of events.
+        # You don't necessarily need the deleted event struct, hence the `_deleted_event` variable.
+        {:noreply, get_events_list(socket)}
+        
+      {:error, reason} ->
+        # Handle the error case. You might want to log the error or notify the user.
+        # For now, we'll just print it to the console.
+        IO.inspect(reason, label: "Failed to delete event")
+        
+        # Do not alter the socket, just send a no-reply response.
+        {:noreply, socket}
+    end
+  end
 
   def formatted_time(datetime) when is_binary(datetime), do: datetime
 

@@ -25,6 +25,11 @@ defmodule AiAssistant.NoteSpace.Event do
     |> Repo.insert()
   end
 
+  def delete_event(event_id) do
+    event = Repo.get!(AiAssistant.NoteSpace.Event, event_id)
+    Repo.delete(event)
+  end
+
   def get_events(user_id, start_datetime, end_datetime, limit) do
     query = from(e in AiAssistant.NoteSpace.Event,
           where: e.user_id == ^user_id and

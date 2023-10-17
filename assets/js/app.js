@@ -44,6 +44,14 @@ window.addEventListener("scrollIntoView", event => {
 })
 
 // calendar hook
+
+// liveSocket.onOpen(() => {
+//   let view = liveSocket.getViewByEl(document.getElementById("time-needed"));
+//   if (view) {
+//     view.pushEvent("receive_time", { current_time: new Date().toISOString() });
+//   }
+// });
+
 let Hooks = {};
 
 Hooks.SendTime = {

@@ -20,11 +20,11 @@
         background-color: var(--color-phx); /* phx */
         border-radius: 5px;
         padding: 10px;
-        margin-bottom: 5px; /* Adjust space between items */
+        /* margin-bottom: 5px; Adjust space between items */
       }
 
       .curent-time {
-        background-color: var(--color-elixir);
+        background-color: var(--color-phx);
       }
 
       .add-form {
@@ -32,17 +32,35 @@
         /*text-align: center;*/
       }
 
+      .centered-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
       .events-headlines{
-        background-color: var(--color-elixir);
+        display: none;
+        color: var(--color-elixir);
+        font-size: 2em;       
+        text-align: center;   
+        margin-top: 30px;     
+        margin-bottom: 20px; 
       }
   </style>
 </head>
 
 <body>
-  <div style="text-align: center; color: var(--color-elixir-cap); margin-bottom: 20px; font-size: 2.5em;">Main Portal To The Calendar:</div>
+  <!--div style="text-align: center; color: var(--color-elixir-cap); margin-bottom: 20px; font-size: 2.5em;">Main Portal To The Calendar:</div -->
   <!-- Here you can add other HTML for your calendar -->
 
-  <div>
+  <div id='time-needed'>
      <%= live_render @conn, AiAssistantWeb.CalendarLive.Index, session: %{"current_user_id" => @current_user.id}, layout: false %>
 
   </div>

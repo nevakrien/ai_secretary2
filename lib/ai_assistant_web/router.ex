@@ -34,7 +34,7 @@ defmodule AiAssistantWeb.Router do
 
     get "/taskboard", PageController, :taskboard
 
-    get "/calendar", CalendarController, :calendar_index
+    get "/calendar/index", CalendarController, :calendar_index
     get "/calendar/:year/:month", CalendarController, :show_month
     get "/calendar/:year/:month/:day", CalendarController, :show_day
   end
