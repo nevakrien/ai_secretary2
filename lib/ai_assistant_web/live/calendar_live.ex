@@ -186,3 +186,9 @@ defmodule AiAssistantWeb.CalendarLive.Index do
   #defp formatted_time("Not received yet"), do: "Not received yet"
 end
 
+# defmodule AiAssistantWeb.CalendarLive.Month do
+#   use Phoenix.LiveView
+#   use AiAssistantWeb.NeedDateTime
+#   alias AiAssistant.NoteSpace.Event
+
+# end

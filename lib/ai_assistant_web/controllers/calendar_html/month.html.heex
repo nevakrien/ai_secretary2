@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Calendar</title>
+ <!--script type="text/javascript" src={AiAssistantWeb.Router.Helpers.static_path(@conn, "/js/calendar.js")}></script-->
+
+
+
+  <style>
+    .event-item-odd {
+        background-color: var(--color-elixir); /* elixir */
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 5px; /* Adjust space between items */
+      }
+
+      .event-item-even {
+        background-color: var(--color-phx); /* phx */
+        border-radius: 5px;
+        padding: 10px;
+        /* margin-bottom: 5px; Adjust space between items */
+      }
+  </style>
+</head>
+
+<body>
+  <!--div style="text-align: center; color: var(--color-elixir-cap); margin-bottom: 20px; font-size: 2.5em;">Main Portal To The Calendar:</div -->
+  <!-- Here you can add other HTML for your calendar -->
+
+  <div id='time-needed'>
+     <%= live_render @conn, AiAssistantWeb.CalendarLive.Month, session: %{"current_user_id" => @current_user.id}, layout: false %>
+
+  </div>
+</body>
+</html>

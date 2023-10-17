@@ -13,12 +13,12 @@ defmodule AiAssistantWeb.CalendarController do
   def show_month(conn, %{"year" => year, "month" => month}) do
     # You will fetch the events for the specified month
     # events = Calendar.list_events_for_month(year, month)
-    render(conn, :show_month, year: year, month: month) # , events: events
+    render(conn, :month, year: year, month: month) # , events: events
   end
 
   def show_day(conn, %{"year" => year, "month" => month, "day" => day}) do
     # You will fetch the events for the specified day
     # events = Calendar.list_events_for_day(year, month, day)
-    render(conn, :show_day, year: year, month: month, day: day) # , events: events
+    render(conn, :day, year: year, month: month, day: day) # , events: events
   end
 end
