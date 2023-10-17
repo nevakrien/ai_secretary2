@@ -22,6 +22,21 @@
         padding: 10px;
         /* margin-bottom: 5px; Adjust space between items */
       }
+      
+    .calendar {
+      display: flex;
+      flex-direction: column;
+    }
+    .week {
+      display: flex;
+      flex-direction: row;
+    }
+    .day {
+      /* Styles for your day div, e.g., width or borders */
+      flex: 1; /* This will allow your days to expand equally within the flex container */
+      text-align: center; /* optional, for styling */
+    }
+    /* Additional styles as needed */
   </style>
 </head>
 
@@ -30,7 +45,7 @@
   <!-- Here you can add other HTML for your calendar -->
 
   <div id='time-needed'>
-     <%= live_render @conn, AiAssistantWeb.CalendarLive.Month, session: %{"current_user_id" => @current_user.id}, layout: false %>
+     <%= live_render @conn, AiAssistantWeb.CalendarLive.Month, session: %{"current_user_id" => @current_user.id,"year"=>@year,"month"=>@month}, layout: false %>
 
   </div>
 </body>

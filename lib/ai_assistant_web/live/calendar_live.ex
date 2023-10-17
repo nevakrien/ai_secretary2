@@ -20,7 +20,7 @@ defmodule AiAssistantWeb.NeedDateTime do
         
         socket=assign(socket, current_time: parsed_time)
         #IO.inspect(parsed_time, label: 'client retrieved time')#when this goes away things work fine???? data race with the mount???
-        {:noreply, get_events_list(socket)}
+        {:noreply, handle_user_time(socket)}
       end
 
       # deafault overwrite this
@@ -29,7 +29,31 @@ defmodule AiAssistantWeb.NeedDateTime do
   end
 end
 
+defmodule AiAssistantWeb.CalendarLive do
+  def formatted_time(datetime) when is_binary(datetime), do: datetime
+
+  def formatted_time(%DateTime{} = datetime) do
+    "#{datetime.year}-#{datetime.month}-#{datetime.day} #{datetime.hour}:#{datetime.minute}"
+  end
+
+  def formatted_time(_), do: "Unexpected input"
+
+  def handle_user_time(socket), do: socket
+
+  def date_to_midnight_datetime(date) do
+  # Create a NaiveDateTime at midnight on the given date
+  naive_datetime = NaiveDateTime.new!(date.year, date.month, date.day, 0, 0, 0, 0)
+  
+  # Convert the NaiveDateTime to DateTime with the local time zone
+  {:ok, datetime} = DateTime.from_naive(naive_datetime, "Etc/UTC")
+  
+  datetime
+end
+
+end
+
 defmodule AiAssistantWeb.CalendarLive.Index do
+  import AiAssistantWeb.CalendarLive
   use Phoenix.LiveView
   use AiAssistantWeb.NeedDateTime
   alias AiAssistant.NoteSpace.Event
@@ -41,6 +65,7 @@ defmodule AiAssistantWeb.CalendarLive.Index do
       socket
       #|> assign_new(:event_form, %{})
       |> assign(:current_user_id, session["current_user_id"])
+      |> update_events_list()
       |> assign_new(:current_time, fn -> "Not received yet" end)
       |> assign_new(:events, fn -> %{} end)
 
@@ -111,12 +136,11 @@ defmodule AiAssistantWeb.CalendarLive.Index do
     """
   end
 
-
-  def get_events_list(socket) do
+  def update_events_list(socket) do
     socket=assign(socket,:events,Event.get_events(socket.assigns.current_user_id,10))
     IO.inspect(socket,label: "socket with events")
   end
-
+  
   @impl true
   def handle_event("save_event", %{"event" => event_params}, socket) do
     IO.puts('save event triggered')
@@ -161,7 +185,7 @@ defmodule AiAssistantWeb.CalendarLive.Index do
       {:ok, _deleted_event} ->
         # If the event was successfully deleted, fetch the updated list of events.
         # You don't necessarily need the deleted event struct, hence the `_deleted_event` variable.
-        {:noreply, get_events_list(socket)}
+        {:noreply, update_events_list(socket)}
         
       {:error, reason} ->
         # Handle the error case. You might want to log the error or notify the user.
@@ -172,23 +196,66 @@ defmodule AiAssistantWeb.CalendarLive.Index do
         {:noreply, socket}
     end
   end
-
-  def formatted_time(datetime) when is_binary(datetime), do: datetime
-
-  def formatted_time(%DateTime{} = datetime) do
-    "#{datetime.year}-#{datetime.month}-#{datetime.day} #{datetime.hour}:#{datetime.minute}"
-  end
-
-  def formatted_time(_), do: "Unexpected input"
-
-
-  #defp formatted_time(time) when is_binary(time), do: time
-  #defp formatted_time("Not received yet"), do: "Not received yet"
 end
 
-# defmodule AiAssistantWeb.CalendarLive.Month do
-#   use Phoenix.LiveView
-#   use AiAssistantWeb.NeedDateTime
-#   alias AiAssistant.NoteSpace.Event
+defmodule AiAssistantWeb.CalendarLive.Month do
+  import AiAssistantWeb.CalendarLive
+  use Phoenix.LiveView
+  use AiAssistantWeb.NeedDateTime
+  alias AiAssistant.NoteSpace.Event
 
-# end
+  @impl true
+  def mount(_params, session, socket) do
+
+    IO.inspect(session["year"],label: 'year')
+    IO.inspect(session["month"],label: 'month')
+    # Initialize with an empty form, the current user's ID, and the socket ID for 'myself'
+    socket = 
+      socket
+      #|> assign_new(:event_form, %{})
+      |>assign(:year,String.to_integer(session["year"]))
+      |>assign(:month,String.to_integer(session["month"]))
+      |> assign(:current_user_id, session["current_user_id"])
+    
+    socket =
+      socket
+      |> assign(:days, get_events_list(socket))
+      |> assign_new(:current_time, fn -> nil end)
+
+    {:ok, socket}
+  end
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <div class="calendar">
+      <%= for week <- Enum.chunk_every(@days, 7) do %>
+        <div class="week">
+          <%= for {date, events} <- week do %>
+            <div class="day">
+              <div class="date"><%= date %></div>
+              <div class="event-count"><%= length(events) %> events</div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div> 
+    """
+  end
+
+  def get_events_list(%{assigns: %{current_user_id: id,year: year, month: month}}=_socket) do
+    
+    # Calculate the first and last days of the month
+    first_date_of_calendar = Date.new!(year, month, 1)
+    last_date_of_calendar  = Date.add(first_date_of_calendar,Date.days_in_month(first_date_of_calendar) - 1)
+
+    # Find the start of the first week (potentially in the previous month)
+    first_date_of_calendar = first_date_of_calendar |> Date.beginning_of_week(:sunday) # assuming weeks start on Sunday
+    last_date_of_calendar = last_date_of_calendar |> Date.end_of_week(:sunday) # assuming weeks end on Saturday
+
+    for date <-Date.range(first_date_of_calendar, last_date_of_calendar) do
+      {date ,Event.get_events(id,date_to_midnight_datetime(date),3)}
+    end
+    |> IO.inspect(label: "months events")
+  end
+end
