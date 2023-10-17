@@ -3,3 +3,15 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+/* assets/css/app.css */
+:root {
+  --color-elixir-cap: #4e2a8e;
+  --color-elixir: #8350de;
+  --color-phx: #f86734;
+   --primary-font: Arial, sans-serif;
+  /* ... other global styles or variables ... */
+}
+
+body {
+  font-family: var(--primary-font);
+}

@@ -8,15 +8,42 @@
 
 
 
-  <style></style>
+  <style>
+    .event-item-odd {
+        background-color: var(--color-elixir); /* elixir */
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 5px; /* Adjust space between items */
+      }
+
+      .event-item-even {
+        background-color: var(--color-phx); /* phx */
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 5px; /* Adjust space between items */
+      }
+
+      .curent-time {
+        background-color: var(--color-elixir);
+      }
+
+      .add-form {
+        background-color: var(--color-elixir);
+        /*text-align: center;*/
+      }
+
+      .events-headlines{
+        background-color: var(--color-elixir);
+      }
+  </style>
 </head>
 
-<body style="">
-  <div class='headed?'>Here's the calendar:</div>
+<body>
+  <div style="text-align: center; color: var(--color-elixir-cap); margin-bottom: 20px; font-size: 2.5em;">Main Portal To The Calendar:</div>
   <!-- Here you can add other HTML for your calendar -->
 
-  <div class='dont head' style="">
-     <%= live_render @conn, AiAssistantWeb.CalendarLive, session: %{"current_user_id" => @current_user.id}, layout: false %>
+  <div>
+     <%= live_render @conn, AiAssistantWeb.CalendarLive.Index, session: %{"current_user_id" => @current_user.id}, layout: false %>
 
   </div>
 </body>

@@ -16,16 +16,20 @@ defmodule AiAssistantWeb.NeedDateTime do
             {:error, _} -> "Invalid time format received"
           end
 
+        # Call the overridable function
+        
+        socket=assign(socket, current_time: parsed_time)
         #IO.inspect(parsed_time, label: 'client retrieved time')#when this goes away things work fine???? data race with the mount???
-        {:noreply, assign(socket, current_time: parsed_time)}
+        {:noreply, handle_parsed_time(socket)}
       end
 
-      # You can add more common functions or event handlers here
+      # deafault overwrite this
+      #def handle_parsed_time(socket), do: socket
     end
   end
 end
 
-defmodule AiAssistantWeb.CalendarLive do
+defmodule AiAssistantWeb.CalendarLive.Index do
   use Phoenix.LiveView
   use AiAssistantWeb.NeedDateTime
   alias AiAssistant.NoteSpace.Event
@@ -35,9 +39,10 @@ defmodule AiAssistantWeb.CalendarLive do
     # Initialize with an empty form, the current user's ID, and the socket ID for 'myself'
     socket = 
       socket
-      |> assign(:event_form, %{})
+      #|> assign_new(:event_form, %{})
       |> assign(:current_user_id, session["current_user_id"])
       |> assign_new(:current_time, fn -> "Not received yet" end)
+      |> assign_new(:events, fn -> %{} end)
 
     {:ok, socket}
   end
@@ -47,10 +52,10 @@ defmodule AiAssistantWeb.CalendarLive do
   def render(assigns) do
     ~H"""
     <div id="calendar" phx-hook="SendTime">
-      <div>
+      <div class='curent-time'>
         Current time: <%= formatted_time(@current_time) %>
       </div>
-      <div>
+      <div class='add-form'>
         <h2>Add New Event</h2>
         <form phx-submit="save_event">
           <label for="event_description">Event Description:</label>
@@ -60,12 +65,29 @@ defmodule AiAssistantWeb.CalendarLive do
           <input type="date" name="event[date]" id="event_date"/>
           <input type="time" name="event[time]" id="event_time" step="1">
 
-
           <input type="submit" value="Add Event" />
         </form>
       </div>
+      <!-- Render the list of events here -->
+      <div>
+        <h2 class='events-headlines'>Events:</h2>
+        <ul>
+          <%= for {event, index} <- Enum.with_index(@events) do %>
+            <li class={if rem(index, 2) == 0, do: "event-item-even", else: "event-item-odd"}>
+              <strong>Date:</strong> <%= event.date |> formatted_time %><br>
+              <strong>Description:</strong> <%= event.description %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
     """
+  end
+
+
+  def handle_parsed_time(socket) do
+    socket=assign(socket,:events,Event.get_events(socket.assigns.current_user_id,10))
+    IO.inspect(socket,label: "socket with events")
   end
 
   @impl true
