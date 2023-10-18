@@ -229,17 +229,52 @@ defmodule AiAssistantWeb.CalendarLive.Month do
   def render(assigns) do
     ~H"""
     <div class="calendar">
-      <%= for week <- Enum.chunk_every(@days, 7) do %>
-        <div class="week">
-          <%= for {date, events} <- week do %>
-            <div class="day">
-              <div class="date"><%= date %></div>
-              <div class="event-count"><%= length(events) %> events</div>
-            </div>
+      <%= for day_index <- 0..6 do %>
+        <div class="week-column">
+          <div class="day-header"><%= day_name_from_date(Enum.at(days_for_column(@days, day_index), 0)) %></div>
+          <%= for day <- days_for_column(@days, day_index) do %>
+            <%= day_render(day) %>
           <% end %>
         </div>
       <% end %>
-    </div> 
+    </div>
+    """
+  end
+
+  defp days_for_column(days, start_index) do
+    days
+    |> Enum.drop(start_index)
+    |> Enum.take_every(7)
+  end
+
+
+  defp day_name_from_date({date, _}) do
+    day_name(Date.day_of_week(date))
+  end
+
+
+  defp day_render({date, events}) do
+    day_class = if Date.day_of_week(date,:sunday) |> rem(2) == 0, do: "even-day", else: "odd-day"
+    event_class = if length(events) > 0, do: "event-day", else: ""
+
+     assigns = %{
+      day_class: day_class,
+      event_class: event_class,
+      date: date,
+      events: events,
+    }
+    
+    ~H"""
+    <div class={"day " <> @day_class<>" "<> @event_class} id={"day" <> Date.to_string(@date)}> 
+      <div class="date"><%= @date %></div>
+      <div class="event-count">
+        <%= if length(@events) > 0 do %>
+          <%= length(@events) %> events
+        <%else%> 
+          -
+        <% end %>
+      </div>
+    </div>
     """
   end
 

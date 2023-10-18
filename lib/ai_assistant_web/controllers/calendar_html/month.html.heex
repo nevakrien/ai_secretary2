@@ -9,34 +9,40 @@
 
 
   <style>
-    .event-item-odd {
-        background-color: var(--color-elixir); /* elixir */
-        border-radius: 5px;
-        padding: 10px;
-        margin-bottom: 5px; /* Adjust space between items */
-      }
+    .odd-day {
+        background-color: var(--color-elixir);
+    }
 
-      .event-item-even {
-        background-color: var(--color-phx); /* phx */
-        border-radius: 5px;
-        padding: 10px;
-        /* margin-bottom: 5px; Adjust space between items */
-      }
-      
+    .even-day{
+        background-color: var(--color-phx);
+    }
+
     .calendar {
-      display: flex;
-      flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr); /* T
+        width: 100%; /* Makes sure the calendar takes the full width */
+
     }
-    .week {
-      display: flex;
-      flex-direction: row;
+
+    .week-column {
+        display: flex;
+        flex-direction: column;
+        flex: 1; /* Each column should equally take up space */
     }
+
+    .day-header {
+        /* Styles for your day headers, like "S", "M", etc. */
+        font-weight: bold; /* This makes headers bold, you can adjust as per your preference */
+        text-align: center;
+    }
+
     .day {
-      /* Styles for your day div, e.g., width or borders */
-      flex: 1; /* This will allow your days to expand equally within the flex container */
-      text-align: center; /* optional, for styling */
+        /* Styles for your day div, e.g., width or borders */
+        flex: 1; /* This will allow your days to expand equally within the flex container */
+        text-align: center; 
+        border: 1px solid #ddd; /* Optional, adds a border around each day */
+        padding: 5px; /* Optional, provides some space around the content of each day */
     }
-    /* Additional styles as needed */
   </style>
 </head>
 
