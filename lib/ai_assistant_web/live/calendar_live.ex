@@ -51,11 +51,15 @@ defmodule AiAssistantWeb.CalendarLive do
   end
 
   def url_from_date(date) do 
-    "calendar/" <> Integer.to_string(date.year) <>
+    "/calendar/" <> Integer.to_string(date.year) <>
     "/" <> Integer.to_string(date.month) <>
     "/" <> Integer.to_string(date.day)
   end
 
+  # def url_from_year_and_month(year,month) do 
+  #   "calendar/" <> Integer.to_string(year) <>
+  #   "/" <> Integer.to_string(month) 
+  # end
 
 end
 
@@ -74,7 +78,7 @@ defmodule AiAssistantWeb.CalendarLive.Index do
       |> assign(:current_user_id, session["current_user_id"])
       |> update_events_list()
       |> assign_new(:current_time, fn -> "Not received yet" end)
-      |> assign_new(:events, fn -> %{} end)
+      #|> assign_new(:events, fn -> %{} end)
 
     {:ok, socket}
   end
@@ -99,7 +103,7 @@ defmodule AiAssistantWeb.CalendarLive.Index do
     """
   end
 
-  defp render_events(assigns) do
+  def render_events(assigns) do
     ~H"""
       <ul>
         <%= for {event, index} <- Enum.with_index(@events) do %>
@@ -251,6 +255,8 @@ defmodule AiAssistantWeb.CalendarLive.Month do
   end
 
   defp day_link({date,_}) do
+    #for some reason it keeps the year locked in but not the month no idea why that is
+    #to_string(date.month)<>"/"<>to_string(date.day)
     url_from_date(date)
   end
 
@@ -317,5 +323,130 @@ defmodule AiAssistantWeb.CalendarLive.Month do
       {date ,Event.get_events(id,date_to_midnight_datetime(date),3)}
     end
     |> IO.inspect(label: "months events")
+  end
+end
+
+defmodule AiAssistantWeb.CalendarLive.Day do
+  import AiAssistantWeb.CalendarLive
+  use Phoenix.LiveView
+  use AiAssistantWeb.NeedDateTime
+  alias AiAssistant.NoteSpace.Event
+
+  alias AiAssistantWeb.CalendarLive.Index 
+  #import AiAssistantWeb.CalendarLive.Index, only: [handle_event: 3]
+
+
+  @impl true
+  def mount(_params, session, socket) do
+    id=session["current_user_id"]
+    {:ok, date}=Date.new(
+      String.to_integer(session["year"]),
+      String.to_integer(session["month"]),
+      String.to_integer(session["day"]))
+    
+    socket=socket
+    |> assign(:date,date)
+    |> assign(:year,date.year)
+    |> assign(:month,date.month)
+    |> assign(:day,date.day)
+    |> assign(:current_user_id, id)
+    |> update_events_list()
+    {:ok,socket}
+  end 
+
+  def update_events_list(socket) do
+    a=socket.assigns
+    assign(socket,:events,Event.get_events(a.current_user_id,date_to_midnight_datetime(a.date),1000))
+  end
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <div id="calendar" phx-hook="SendTime">
+      <div class='add-form'>
+        <%= render_event_form(assigns) %>
+      </div>
+      <!-- Render the list of events here -->
+      <div>
+        <h2 class='events-headlines'>Events:</h2>
+        <%= Index.render_events(assigns)%>
+      </div>
+    </div>
+    """
+  end
+
+  defp render_event_form(assigns) do
+    ~L"""
+    <div class="centered-form">
+      <h2>Add New Event</h2>
+      <form phx-submit="save_event">
+        <div class="form-group">
+          <label for="event_description">Event Description:</label>
+          <input type="text" name="event[description]" id="event_description"/>
+        </div>
+        
+        <div class="form-group">
+          <label for="event_time">Event Time:</label>
+          <input type="time" name="event[time]" id="event_time" step="60">
+        </div>
+        
+        <div class="form-group" style="text-color var(--color-phx)">
+          <input type="submit" value="Add Event" />
+        </div>
+      </form>
+    </div>
+    """
+  end
+  
+  @impl true
+  def handle_event("save_event", %{"event" => event_params}, socket) do
+    IO.puts('save event triggered')
+    current_user_id = socket.assigns.current_user_id
+
+    # Extracting date and time from the event_params
+    time = Map.get(event_params, "time") || "00:00" # default to midnight if time is not provided
+    time=Time.from_iso8601!(time <> ":00")
+
+    # Parsing the string into a NaiveDateTime struct.
+    naive_datetime = NaiveDateTime.new!(socket.assigns.date,time)
+    
+    # Convert the naive datetime to UTC datetime
+    utc_datetime = DateTime.from_naive!(naive_datetime, "Etc/UTC")
+
+    # Add the datetime and user_id to the event_params
+    attrs =  %{"date" => utc_datetime, "user_id" => current_user_id, "description"=>Map.fetch!(event_params, "description")}
+
+    IO.inspect(attrs, label: 'event')
+
+    case Event.create_event(attrs) do
+      {:ok, event} ->
+        # If the event is saved successfully, you might want to clear the form or emit a success message.
+        {:noreply, assign(socket,:events,[event | socket.assigns.events] )}
+      {:error, changeset} ->
+        # If there's an error, you'll need to handle it here, possibly sending back validation errors to the form.
+        IO.inspect(changeset)
+        {:noreply, socket}
+    end
+  end
+
+  def handle_event("delete_event", %{"id" => id}, socket) do
+    # Convert the id to integer if it's a string, as database IDs are typically integers.
+    id = String.to_integer(id)
+
+    # Assuming you have a delete function in your context
+    case Event.delete_event(id) do
+      {:ok, _deleted_event} ->
+        # If the event was successfully deleted, fetch the updated list of events.
+        # You don't necessarily need the deleted event struct, hence the `_deleted_event` variable.
+        {:noreply, update_events_list(socket)}
+        
+      {:error, reason} ->
+        # Handle the error case. You might want to log the error or notify the user.
+        # For now, we'll just print it to the console.
+        IO.inspect(reason, label: "Failed to delete event")
+        
+        # Do not alter the socket, just send a no-reply response.
+        {:noreply, socket}
+    end
   end
 end

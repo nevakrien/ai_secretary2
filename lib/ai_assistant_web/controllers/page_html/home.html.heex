@@ -45,6 +45,8 @@
             <ul>
                 <li><a href="/taskboard">Taskboard</a></li>
                 <li><a href="/calendar/index">Calendar</a></li>
+                <%= live_render(@conn, AiAssistantWeb.Home.CalendarForm) %>
+
                 <!-- Add more core features as per your app -->
             </ul>
         </section>

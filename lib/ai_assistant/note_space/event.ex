@@ -35,7 +35,7 @@ defmodule AiAssistant.NoteSpace.Event do
           where: e.user_id == ^user_id and
                  e.date >= ^start_datetime and
                  e.date <= ^end_datetime,
-          order_by: [asc: e.date],
+          order_by: [asc: e.date, asc: e.updated_at],
           limit: ^limit)
 
     Repo.all(query)
