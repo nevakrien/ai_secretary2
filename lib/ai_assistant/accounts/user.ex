@@ -11,6 +11,7 @@ defmodule AiAssistant.Accounts.User do
     has_many :messages, AiAssistant.Chatbot.Conversation
     has_many :tasks, AiAssistant.NoteSpace.Task
     has_many :events, AiAssistant.NoteSpace.Event
+    has_one :user_time_zone, AiAssistant.UserTimeZone
 
     timestamps()
   end

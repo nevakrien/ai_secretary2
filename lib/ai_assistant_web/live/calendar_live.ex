@@ -9,14 +9,15 @@ defmodule AiAssistantWeb.NeedDateTime do
 
       # Common functionality for handling events
       def handle_event("receive_time", %{"current_time" => time}, socket) do
-        IO.puts('recived')
+        IO.inspect(time,label: 'recived time')
         parsed_time = 
-          case Timex.parse(time, "{ISO:Extended}") do
+          case Timex.parse(time<>"Z", "{ISO:Extended}") do
             {:ok, datetime} -> datetime#Timex.format!(datetime, "{RFC1123}")
             {:error, _} -> "Invalid time format received"
           end
 
-        # Call the overridable function
+        #update our info on the user
+        AiAssistant.UserTime.upsert_user_time(socket.assigns.current_user_id,parsed_time)
         
         socket=assign(socket, current_time: parsed_time)
         #IO.inspect(parsed_time, label: 'client retrieved time')#when this goes away things work fine???? data race with the mount???
@@ -159,8 +160,8 @@ defmodule AiAssistantWeb.CalendarLive.Index do
   end
 
   def update_events_list(socket) do
-    socket=assign(socket,:events,Event.get_events(socket.assigns.current_user_id,10))
-    IO.inspect(socket,label: "socket with events")
+    assign(socket,:events,Event.get_events(socket.assigns.current_user_id,10))
+    #IO.inspect(socket,label: "socket with events")remeber socket=
   end
   
   @impl true
@@ -184,15 +185,15 @@ defmodule AiAssistantWeb.CalendarLive.Index do
     # Add the datetime and user_id to the event_params
     attrs =  %{"date" => utc_datetime, "user_id" => current_user_id, "description"=>Map.fetch!(event_params, "description")}
 
-    IO.inspect(attrs, label: 'event')
+    #IO.inspect(attrs, label: 'event')
 
     case Event.create_event(attrs) do
       {:ok, event} ->
         # If the event is saved successfully, you might want to clear the form or emit a success message.
         {:noreply, assign(socket,:events,[event | socket.assigns.events] )}
-      {:error, changeset} ->
+      {:error, _changeset} ->
         # If there's an error, you'll need to handle it here, possibly sending back validation errors to the form.
-        IO.inspect(changeset)
+        #IO.inspect(changeset)
         {:noreply, socket}
     end
   end
@@ -209,10 +210,10 @@ defmodule AiAssistantWeb.CalendarLive.Index do
         # You don't necessarily need the deleted event struct, hence the `_deleted_event` variable.
         {:noreply, update_events_list(socket)}
         
-      {:error, reason} ->
+      {:error, _reason} ->
         # Handle the error case. You might want to log the error or notify the user.
         # For now, we'll just print it to the console.
-        IO.inspect(reason, label: "Failed to delete event")
+        #IO.inspect(reason, label: "Failed to delete event")
         
         # Do not alter the socket, just send a no-reply response.
         {:noreply, socket}
@@ -231,8 +232,8 @@ defmodule AiAssistantWeb.CalendarLive.Month do
   @impl true
   def mount(_params, session, socket) do
 
-    IO.inspect(session["year"],label: 'year')
-    IO.inspect(session["month"],label: 'month')
+    #IO.inspect(session["year"],label: 'year')
+    #IO.inspect(session["month"],label: 'month')
     # Initialize with an empty form, the current user's ID, and the socket ID for 'myself'
     socket = 
       socket
@@ -333,7 +334,7 @@ defmodule AiAssistantWeb.CalendarLive.Month do
     last_date_of_calendar = last_date_of_calendar |> Date.end_of_week(:sunday) # assuming weeks end on Saturday
 
     get_events_from_dates(id,first_date_of_calendar,last_date_of_calendar)
-    |> IO.inspect(label: "months events")
+    #|> IO.inspect(label: "months events")
   end
 
  
@@ -436,7 +437,7 @@ defmodule AiAssistantWeb.CalendarLive.Day do
   
   @impl true
   def handle_event("save_event", %{"event" => event_params}, socket) do
-    IO.puts('save event triggered')
+    #IO.puts('save event triggered')
     current_user_id = socket.assigns.current_user_id
 
     # Extracting date and time from the event_params
@@ -452,15 +453,15 @@ defmodule AiAssistantWeb.CalendarLive.Day do
     # Add the datetime and user_id to the event_params
     attrs =  %{"date" => utc_datetime, "user_id" => current_user_id, "description"=>Map.fetch!(event_params, "description")}
 
-    IO.inspect(attrs, label: 'event')
+   # IO.inspect(attrs, label: 'event')
 
     case Event.create_event(attrs) do
       {:ok, event} ->
         # If the event is saved successfully, you might want to clear the form or emit a success message.
         {:noreply, assign(socket,:events,[event | socket.assigns.events] )}
-      {:error, changeset} ->
+      {:error, _changeset} ->
         # If there's an error, you'll need to handle it here, possibly sending back validation errors to the form.
-        IO.inspect(changeset)
+        #IO.inspect(changeset)
         {:noreply, socket}
     end
   end

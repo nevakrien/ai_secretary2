@@ -54,13 +54,29 @@ window.addEventListener("scrollIntoView", event => {
 
 let Hooks = {};
 
+// Hooks.SendTime = {
+//   mounted() {
+//     // 'this' refers to the Hook's context, and 'this.el' is the DOM element the Hook is attached to.
+//     // You don't need to know the specific ID of the element.
+//     this.pushEvent("receive_time", { current_time: new Date().toISOString() });
+//   },
+// };
+
 Hooks.SendTime = {
   mounted() {
-    // 'this' refers to the Hook's context, and 'this.el' is the DOM element the Hook is attached to.
-    // You don't need to know the specific ID of the element.
-    this.pushEvent("receive_time", { current_time: new Date().toISOString() });
+    let now = new Date();
+    let tzOffset = now.getTimezoneOffset() * 60000; //offset in milliseconds
+    let localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, -1);
+
+    // Remove milliseconds
+    let finalTime = localISOTime.split('.')[0];
+
+    this.pushEvent("receive_time", { current_time: finalTime });
   },
 };
+
+
+
 
 // Assuming liveSocket is your LiveSocket instance
 liveSocket.hooks = Hooks;
