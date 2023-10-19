@@ -40,12 +40,23 @@ defmodule AiAssistantWeb.CalendarLive do
 
   def handle_user_time(socket), do: socket
 
-  def date_to_midnight_datetime(date) do
+  def date_to_first_in_day_datetime(date) do
     # Create a NaiveDateTime at midnight on the given date
     naive_datetime = NaiveDateTime.new!(date.year, date.month, date.day, 0, 0, 0, 0)
     
     # Convert the NaiveDateTime to DateTime with the local time zone
     {:ok, datetime} = DateTime.from_naive(naive_datetime, "Etc/UTC")
+    
+    datetime
+  end
+
+  def date_to_last_in_day_datetime(date) do
+    # Create a NaiveDateTime at 23:59:59 on the given date, representing the end of the day.
+    naive_datetime_end_of_day = NaiveDateTime.new!(date, Time.new!(23, 59, 59)) # 23:59:59
+    
+    # Convert the NaiveDateTime to DateTime with the appropriate time zone, "Etc/UTC" in this case.
+    # You should replace "Etc/UTC" with the time zone relevant to your application if different.
+    {:ok, datetime} = DateTime.from_naive(naive_datetime_end_of_day, "Etc/UTC")
     
     datetime
   end
@@ -215,6 +226,8 @@ defmodule AiAssistantWeb.CalendarLive.Month do
   use AiAssistantWeb.NeedDateTime
   alias AiAssistant.NoteSpace.Event
 
+  @max_limit 10_000  # Define a module attribute for the maximum limit.
+  
   @impl true
   def mount(_params, session, socket) do
 
@@ -319,12 +332,35 @@ defmodule AiAssistantWeb.CalendarLive.Month do
     first_date_of_calendar = first_date_of_calendar |> Date.beginning_of_week(:sunday) # assuming weeks start on Sunday
     last_date_of_calendar = last_date_of_calendar |> Date.end_of_week(:sunday) # assuming weeks end on Saturday
 
-    for date <-Date.range(first_date_of_calendar, last_date_of_calendar) do
-      {date ,Event.get_events(id,date_to_midnight_datetime(date),3)}
-    end
+    get_events_from_dates(id,first_date_of_calendar,last_date_of_calendar)
     |> IO.inspect(label: "months events")
   end
+
+ 
+
+  def get_events_from_dates(user_id, start, finish) do
+    start_datetime = date_to_first_in_day_datetime(start)
+    end_datetime =date_to_last_in_day_datetime(finish)
+                  
+    # Fetch events with a high limit to prevent fetching an excessive number of records.
+    events = Event.get_events(user_id, start_datetime, end_datetime, @max_limit)
+
+    # Group events by date.
+    events = events
+    |> Enum.group_by(& &1.date |> DateTime.to_date())
+
+    date_range = Date.range(start, finish)
+
+    # Ensure there's an entry for every date in the range, even if no events are found for that date.
+    date_range
+    |> Enum.map(fn date -> 
+         {date, Map.get(events, date, [])} 
+       end)
+  end
+
 end
+
+
 
 defmodule AiAssistantWeb.CalendarLive.Day do
   import AiAssistantWeb.CalendarLive
@@ -356,7 +392,7 @@ defmodule AiAssistantWeb.CalendarLive.Day do
 
   def update_events_list(socket) do
     a=socket.assigns
-    assign(socket,:events,Event.get_events(a.current_user_id,date_to_midnight_datetime(a.date),1000))
+    assign(socket,:events,Event.get_events(a.current_user_id,date_to_first_in_day_datetime(a.date),1000))
   end
 
   @impl true
