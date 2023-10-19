@@ -289,7 +289,7 @@ defmodule AiAssistantWeb.CalendarLive.Month do
     <div class={"day " <> @day_class<>" "<> @event_class} id={"day" <> Date.to_string(@date)}> 
       <div class="date"><%= @date.day %></div>
 
-      <% last_updated_event = Enum.sort_by(@events, & &1.updated_at, {:desc, DateTime}) |> List.last() %>
+      <% last_updated_event = Enum.sort_by(@events, & &1.updated_at, {:desc, NaiveDateTime}) |> List.last() %>
       <div class="event-name">
           <%= if last_updated_event do %>
             <%= last_updated_event.description %>
