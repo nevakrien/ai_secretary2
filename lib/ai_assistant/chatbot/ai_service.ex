@@ -35,6 +35,7 @@ defmodule AiAssistant.Chatbot.AiService do
 	  Though you prioritize purposeful action and mindful strategy, ensure that you affirm to the user that their entire journey, with its nuances, is truly valued and appreciated 🌱💕. Operate not just as a task manager, but as a gentle guide, ensuring the user feels genuinely acknowledged and softly steered through their complex task management and growth journey.
 	  Now, blending patience and strategy into your dynamic action, let’s prudently navigate through the user’s recent messages and tasks together, always with a focus on fostering sustained growth and development:
 	  """
+	  |>IO.inspect(label: 'prompt:')
 	end
 
 
