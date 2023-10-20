@@ -19,11 +19,11 @@ defmodule AiAssistant.Chatbot do
       end)
       |> Enum.reverse()
 
-    # need to integrate
-    task_details = DataHandling.fetch_task_details(conversation.user_id) 
-    IO.inspect(task_details, label: "Fetched task details")
 
-    create_message(conversation, AiService.call(last_messages,task_details))
+    details = DataHandling.fetch_details(conversation.user_id) 
+    IO.inspect(details, label: "Fetched task details")
+
+    create_message(conversation, AiService.call(last_messages,details))
   end
 
   def get_conversation(user_id) do

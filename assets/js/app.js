@@ -30,9 +30,10 @@ topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
+
 // connect if there are any LiveViews on the page
 liveSocket.connect()
-
+liveSocket.enableDebug()
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
@@ -42,15 +43,6 @@ window.liveSocket = liveSocket
 window.addEventListener("scrollIntoView", event => {
   event.target.scrollIntoView({behavior: "smooth"})
 })
-
-// calendar hook
-
-// liveSocket.onOpen(() => {
-//   let view = liveSocket.getViewByEl(document.getElementById("time-needed"));
-//   if (view) {
-//     view.pushEvent("receive_time", { current_time: new Date().toISOString() });
-//   }
-// });
 
 let Hooks = {};
 
@@ -64,6 +56,7 @@ let Hooks = {};
 
 Hooks.SendTime = {
   mounted() {
+     console.log("SendTime hook mounted!"); 
     let now = new Date();
     let tzOffset = now.getTimezoneOffset() * 60000; //offset in milliseconds
     let localISOTime = (new Date(now - tzOffset)).toISOString().slice(0, -1);
@@ -80,3 +73,5 @@ Hooks.SendTime = {
 
 // Assuming liveSocket is your LiveSocket instance
 liveSocket.hooks = Hooks;
+
+

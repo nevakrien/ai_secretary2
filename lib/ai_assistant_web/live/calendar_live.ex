@@ -34,8 +34,15 @@ defmodule AiAssistantWeb.CalendarLive do
   def formatted_time(datetime) when is_binary(datetime), do: datetime
 
   def formatted_time(%DateTime{} = datetime) do
-    "#{datetime.year}-#{datetime.month}-#{datetime.day} #{datetime.hour}:#{datetime.minute}"
+    year = datetime.year |> Integer.to_string()
+    month = datetime.month |> Integer.to_string() |> String.pad_leading(2, "0")
+    day = datetime.day |> Integer.to_string() |> String.pad_leading(2, "0")
+    hour = datetime.hour |> Integer.to_string() |> String.pad_leading(2, "0")
+    minute = datetime.minute |> Integer.to_string() |> String.pad_leading(2, "0")
+
+    "#{year}-#{month}-#{day} #{hour}:#{minute}"
   end
+
 
   def formatted_time(_), do: "Unexpected input"
 

@@ -6,6 +6,29 @@ defmodule AiAssistantWeb.ChatbotLive do
   alias AiAssistant.Chatbot
   alias AiAssistant.Chatbot.Message
 
+
+  alias Timex # Import Timex for date/time operations
+
+  # # Common functionality for handling events
+  @impl true
+  def handle_event("receive_time", %{"current_time" => time}, socket) do
+    IO.inspect(time,label: 'recived time')
+    parsed_time = 
+      case Timex.parse(time<>"Z", "{ISO:Extended}") do
+        {:ok, datetime} -> datetime#Timex.format!(datetime, "{RFC1123}")
+        {:error, _} -> "Invalid time format received"
+      end
+
+    #update our info on the user
+    AiAssistant.UserTime.upsert_user_time(socket.assigns.conversation.user_id,parsed_time)
+  
+    {:noreply, socket}
+  end
+  
+  # def handle_event("receive_time", params, socket) do
+  #   IO.inspect(params,label: 'recived time weird')
+  #   {:noreply, socket}
+  # end
   @impl true
   def mount(_params, session, socket) do
 
@@ -74,6 +97,7 @@ defmodule AiAssistantWeb.ChatbotLive do
   @impl true
   def render(assigns) do
     ~H"""
+    <div id="chatbot_time" data-phx-hook="SendTime" phx-hook="SendTime"></div>
     <div class="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-t-lg overflow-hidden">
       <div class="flex flex-col flex-grow p-4 overflow-auto max-h-[--chat-max-height]">
         
