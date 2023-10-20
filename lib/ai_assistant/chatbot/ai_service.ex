@@ -27,7 +27,7 @@ defmodule AiAssistant.Chatbot.AiService do
 	  #{format_tasks("Recent Changes/Additions:", details.recently_extras_tasks)}
 	  Tune into these tasks, offering savvy recommendations for assimilation into current schedules, whilst maintaining a lens on the user’s mental and emotional wellbeing 🗓️⚖️.
 
-	  #{format_events("Recent Events:",details.upcoming_events)}
+	  #{format_events("Recent Events:",details.recent_past_events)}
 
 	  #{format_events("Upcoming Events:",details.upcoming_events)}
 	  The user may need a reminder about these and they are likely on their mind.
