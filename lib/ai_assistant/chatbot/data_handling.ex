@@ -15,8 +15,8 @@ defmodule AiAssistant.Chatbot.DataHandling do
     current_time = UserTime.get_user_local_time(user_id)
     if is_nil(current_time), do: raise "no time data on this user"
 
-    task_fetch_upcoming = Task.async(fn -> fetch_upcoming_events(user_id, current_time, 60 * 12, 3) end)
-    task_fetch_past = Task.async(fn -> fetch_recent_past_events(user_id, current_time, 60 * 12, 3) end)
+    task_fetch_upcoming = Task.async(fn -> fetch_upcoming_events(user_id, current_time, 60 * 24*3, 3) end)
+    task_fetch_past = Task.async(fn -> fetch_recent_past_events(user_id, current_time, 60 * 24*3, 3) end)
 
     # Now, gather all task results
     oldest_uncompleted_tasks = Task.await(task_fetch_oldest)
