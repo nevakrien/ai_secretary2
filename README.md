@@ -1,5 +1,8 @@
 # AiAssistant
 
+basic ai coach to help with profetional growth while not balancing well being.
+still in alpha
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
