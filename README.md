@@ -1,6 +1,6 @@
 # AiAssistant
 
-basic ai coach to help with profetional growth while not balancing well being.
+basic ai coach to help with profetional growth while balancing well being.
 still in alpha
 
 To start your Phoenix server:
